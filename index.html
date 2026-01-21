@@ -1,0 +1,596 @@
+
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Kebab UZ - Ovqat Yetkazib Berish</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #FFF9C4 0%, #FFEB3B 100%);
+            min-height: 100vh;
+        }
+
+        header {
+            background: #D32F2F;
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cart-btn {
+            background: #FFEB3B;
+            color: #D32F2F;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .cart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255,235,59,0.4);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #D32F2F;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .categories {
+            display: flex;
+            gap: 15px;
+            padding: 30px 0;
+            overflow-x: auto;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            background: white;
+            border: 2px solid #D32F2F;
+            color: #D32F2F;
+            padding: 10px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .category-btn:hover, .category-btn.active {
+            background: #D32F2F;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 20px 0;
+            margin-bottom: 40px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(211,47,47,0.2);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #FFE082 0%, #FFEB3B 100%);
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .product-price {
+            font-size: 24px;
+            font-weight: 700;
+            color: #D32F2F;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            position: relative;
+            padding: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #f0f0f0;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s;
+        }
+
+        .close-modal:hover {
+            background: #D32F2F;
+            color: white;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .quantity-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .quantity-buttons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .qty-btn {
+            background: #FFEB3B;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #D32F2F;
+        }
+
+        .qty-btn:hover {
+            background: #D32F2F;
+            color: white;
+        }
+
+        .qty-display {
+            font-size: 24px;
+            font-weight: 700;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .extras {
+            margin: 25px 0;
+        }
+
+        .extras-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .extra-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 12px 0;
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .extra-item:hover {
+            background: #FFF9C4;
+        }
+
+        .extra-item input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+        }
+
+        .extra-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .extra-price {
+            font-weight: 600;
+            color: #D32F2F;
+        }
+
+        .add-to-cart-btn {
+            width: 100%;
+            background: #D32F2F;
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 25px;
+        }
+
+        .add-to-cart-btn:hover {
+            background: #B71C1C;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(211,47,47,0.3);
+        }
+
+        .total-price {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #D32F2F;
+            margin: 20px 0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            font-size: 20px;
+            color: #D32F2F;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 15px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .cart-btn {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    🍖 Master Kebab UZ
+                </div>
+                <button class="cart-btn" onclick="openCart()">
+                    🛒 Savat
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="categories" id="categories">
+            <button class="category-btn active" onclick="filterProducts('all')">Hammasi</button>
+        </div>
+
+        <div class="products-grid" id="productsGrid">
+            <div class="loading">Mahsulotlar yuklanmoqda...</div>
+        </div>
+    </main>
+
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalProductName"></h2>
+                <button class="close-modal" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <img id="modalProductImage" class="modal-product-image" src="" alt="">
+                
+                <div class="quantity-control">
+                    <span class="quantity-label">Miqdori:</span>
+                    <div class="quantity-buttons">
+                        <button class="qty-btn" onclick="changeQuantity(-1)">−</button>
+                        <span class="qty-display" id="quantity">1</span>
+                        <button class="qty-btn" onclick="changeQuantity(1)">+</button>
+                    </div>
+                </div>
+
+                <div class="extras">
+                    <div class="extras-title">Qo'shimchalar:</div>
+                    <div id="extrasList"></div>
+                </div>
+
+                <div class="total-price">
+                    Jami: <span id="totalPrice">0</span> so'm
+                </div>
+
+                <button class="add-to-cart-btn" onclick="addToCart()">
+                    Savatga qo'shish
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock data (Supabase o'rniga)
+        const mockProducts = [
+            { id: 1, name: "Kebab Lavash", price: 28000, image: "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?w=400", category: "Kebab" },
+            { id: 2, name: "Tovuq Kebab", price: 32000, image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400", category: "Kebab" },
+            { id: 3, name: "Gamburger", price: 25000, image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400", category: "Burgerlar" },
+            { id: 4, name: "Chizburger", price: 27000, image: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=400", category: "Burgerlar" },
+            { id: 5, name: "Cola 1L", price: 10000, image: "https://images.unsplash.com/photo-1554866585-cd94860890b7?w=400", category: "Ichimliklar" },
+            { id: 6, name: "Fanta 1L", price: 10000, image: "https://images.unsplash.com/photo-1624517452488-04869289c4ca?w=400", category: "Ichimliklar" },
+            { id: 7, name: "Pizza Margarita", price: 45000, image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400", category: "Pizza" },
+            { id: 8, name: "Pizza Pepperoni", price: 50000, image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400", category: "Pizza" },
+            { id: 9, name: "Kartoshka Free", price: 12000, image: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400", category: "Garnir" },
+            { id: 10, name: "Sous Ketchup", price: 3000, image: "https://images.unsplash.com/photo-1472476443507-c7a5948772fc?w=400", category: "Sous" }
+        ];
+
+        const extras = [
+            { id: 1, name: "Pomidor", price: 3000 },
+            { id: 2, name: "Piyoz", price: 2000 },
+            { id: 3, name: "Salat", price: 2500 },
+            { id: 4, name: "Sous", price: 3000 },
+            { id: 5, name: "Pishloq", price: 5000 }
+        ];
+
+        let currentProduct = null;
+        let currentQuantity = 1;
+        let selectedExtras = [];
+        let cart = JSON.parse(localStorage.getItem('masterKebabCart')) || [];
+
+        function loadProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = mockProducts.map(product => `
+                <div class="product-card" onclick="openProductModal(${product.id})">
+                    <img class="product-image" src="${product.image}" alt="${product.name}">
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price">${product.price.toLocaleString()} so'm</div>
+                    </div>
+                </div>
+            `).join('');
+
+            loadCategories();
+            updateCartCount();
+        }
+
+        function loadCategories() {
+            const categories = ['all', ...new Set(mockProducts.map(p => p.category))];
+            const categoriesDiv = document.getElementById('categories');
+            categoriesDiv.innerHTML = categories.map(cat => `
+                <button class="category-btn ${cat === 'all' ? 'active' : ''}" onclick="filterProducts('${cat}')">
+                    ${cat === 'all' ? 'Hammasi' : cat}
+                </button>
+            `).join('');
+        }
+
+        function filterProducts(category) {
+            const buttons = document.querySelectorAll('.category-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const filtered = category === 'all' ? mockProducts : mockProducts.filter(p => p.category === category);
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = filtered.map(product => `
+                <div class="product-card" onclick="openProductModal(${product.id})">
+                    <img class="product-image" src="${product.image}" alt="${product.name}">
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price">${product.price.toLocaleString()} so'm</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openProductModal(productId) {
+            currentProduct = mockProducts.find(p => p.id === productId);
+            currentQuantity = 1;
+            selectedExtras = [];
+
+            document.getElementById('modalProductName').textContent = currentProduct.name;
+            document.getElementById('modalProductImage').src = currentProduct.image;
+            document.getElementById('quantity').textContent = currentQuantity;
+
+            const extrasList = document.getElementById('extrasList');
+            extrasList.innerHTML = extras.map(extra => `
+                <div class="extra-item" onclick="toggleExtra(${extra.id})">
+                    <input type="checkbox" id="extra-${extra.id}" onchange="toggleExtra(${extra.id})">
+                    <span class="extra-name">${extra.name}</span>
+                    <span class="extra-price">+${extra.price.toLocaleString()} so'm</span>
+                </div>
+            `).join('');
+
+            updateTotalPrice();
+            document.getElementById('productModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').classList.remove('active');
+        }
+
+        function changeQuantity(delta) {
+            currentQuantity = Math.max(1, currentQuantity + delta);
+            document.getElementById('quantity').textContent = currentQuantity;
+            updateTotalPrice();
+        }
+
+        function toggleExtra(extraId) {
+            const index = selectedExtras.indexOf(extraId);
+            if (index > -1) {
+                selectedExtras.splice(index, 1);
+            } else {
+                selectedExtras.push(extraId);
+            }
+            updateTotalPrice();
+        }
+
+        function updateTotalPrice() {
+            let total = currentProduct.price * currentQuantity;
+            selectedExtras.forEach(extraId => {
+                const extra = extras.find(e => e.id === extraId);
+                total += extra.price * currentQuantity;
+            });
+            document.getElementById('totalPrice').textContent = total.toLocaleString();
+        }
+
+        function addToCart() {
+            const cartItem = {
+                product: currentProduct,
+                quantity: currentQuantity,
+                extras: selectedExtras.map(id => extras.find(e => e.id === id)),
+                totalPrice: parseInt(document.getElementById('totalPrice').textContent.replace(/,/g, ''))
+            };
+
+            cart.push(cartItem);
+            localStorage.setItem('masterKebabCart', JSON.stringify(cart));
+            updateCartCount();
+            closeModal();
+            alert('Mahsulot savatga qo\'shildi! ✅');
+        }
+
+        function updateCartCount() {
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartCount').textContent = count;
+        }
+
+        function openCart() {
+            if (cart.length === 0) {
+                alert('Savat bo\'sh!');
+                return;
+            }
+            let cartContent = 'Savatdagi mahsulotlar:\n\n';
+            let total = 0;
+            cart.forEach((item, index) => {
+                cartContent += `${index + 1}. ${item.product.name} x${item.quantity}\n`;
+                if (item.extras.length > 0) {
+                    cartContent += `   Qo'shimchalar: ${item.extras.map(e => e.name).join(', ')}\n`;
+                }
+                cartContent += `   ${item.totalPrice.toLocaleString()} so'm\n\n`;
+                total += item.totalPrice;
+            });
+            cartContent += `Jami: ${total.toLocaleString()} so'm`;
+            alert(cartContent);
+        }
+
+        loadProducts();
+    </script>
+</body>
+</html>
